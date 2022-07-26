@@ -21,14 +21,6 @@ const toogleLoader = () => {
   refs.loader.classList.toggle('is-hidden');
 };
 
-const verifyAndUnpackData = response => {
-  if (!response.ok) {
-    throw new Error(response.status);
-  }
-
-  return response.json();
-};
-
 const createListOfCountriesMarkup = data =>
   data
     .map(
@@ -77,7 +69,7 @@ const renderData = data => {
 const showError = error => Notify.failure(error.message === '404' ? 'Oops, there is no country with that name' : 'Oops, something went wrong');
 
 const findCountries = name => {
-  fetchCountries(name).then(verifyAndUnpackData).then(renderData).catch(showError).finally(toogleLoader);
+  fetchCountries(name).then(renderData).catch(showError).finally(toogleLoader);
 };
 
 const onSearchBoxInput = ({ target }) => {
