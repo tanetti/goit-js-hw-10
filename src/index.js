@@ -9,6 +9,7 @@ const refs = {
   searchBox: document.querySelector('input#search-box'),
   countryList: document.querySelector('ul.country-list'),
   countryInfo: document.querySelector('div.country-info'),
+  spinner: document.querySelector('div.spinner'),
 };
 
 const clearCountryInfoContainers = () => {
@@ -34,9 +35,9 @@ const listOfCountriesMarkup = data =>
   data
     .map(
       ({ name, flags }) =>
-        `<li>
-          <img src="${flags.svg}" alt="${name.official}" width="40">
-          <span>${name.official}</span>
+        `<li class="country-list__item">
+          <img class="country-list__image" src="${flags.svg}" alt="${name.official}" width="32">
+          <span class="country-list__name" >${name.official}</span>
         </li>`
     )
     .join('');
@@ -44,10 +45,21 @@ const listOfCountriesMarkup = data =>
 const singleCountryMarkup = ([country]) => {
   const { name, flags, capital, population, languages } = country;
 
-  return `<li>
-          <img src="${flags.svg}" alt="${name.official}" width="80">
-          <span>${name.official}</span>
-        </li>`;
+  return `<div class="country-info__head">
+            <img class="country-info__image" src="${flags.svg}" alt="${name.official}" width="80">
+            <span class="country-info__name">${name.official}</span>
+          </div>
+          <ul class="list">
+            <li class="country-info__feature">
+              <span class="country-info__feature-caption">Capital: </span>${capital}
+            </li>
+            <li class="country-info__feature">
+              <span class="country-info__feature-caption">Population: </span>${population}
+            </li>
+            <li class="country-info__feature">
+              <span class="country-info__feature-caption">Languages: </span>${Object.values(languages).join(', ')}
+            </li>
+          </ul>`;
 };
 
 const renderData = data => {
