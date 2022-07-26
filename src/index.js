@@ -9,7 +9,7 @@ const refs = {
   searchBox: document.querySelector('input#search-box'),
   countryList: document.querySelector('ul.country-list'),
   countryInfo: document.querySelector('div.country-info'),
-  spinner: document.querySelector('div.spinner'),
+  loader: document.querySelector('div.loader'),
 };
 
 const clearCountryInfoContainers = () => {
@@ -17,10 +17,8 @@ const clearCountryInfoContainers = () => {
   refs.countryList.innerHTML = '';
 };
 
-const onSearchBoxInput = ({ target }) => {
-  const countryName = target.value.trim();
-  countryName && findCountries(countryName);
-  clearCountryInfoContainers();
+const toogleLoader = () => {
+  refs.loader.classList.toggle('is-hidden');
 };
 
 const verifyAndUnpackData = response => {
@@ -31,7 +29,7 @@ const verifyAndUnpackData = response => {
   return response.json();
 };
 
-const listOfCountriesMarkup = data =>
+const createListOfCountriesMarkup = data =>
   data
     .map(
       ({ name, flags }) =>
@@ -42,7 +40,7 @@ const listOfCountriesMarkup = data =>
     )
     .join('');
 
-const singleCountryMarkup = ([country]) => {
+const createSingleCountryMarkup = ([country]) => {
   const { name, flags, capital, population, languages } = country;
 
   return `<div class="country-info__head">
@@ -69,17 +67,28 @@ const renderData = data => {
   }
 
   if (data.length > 1) {
-    refs.countryList.innerHTML = listOfCountriesMarkup(data);
+    refs.countryList.innerHTML = createListOfCountriesMarkup(data);
     return;
   }
 
-  refs.countryInfo.innerHTML = singleCountryMarkup(data);
+  refs.countryInfo.innerHTML = createSingleCountryMarkup(data);
 };
 
 const showError = error => Notify.failure(error.message === '404' ? 'Oops, there is no country with that name' : 'Oops, something went wrong');
 
 const findCountries = name => {
-  fetchCountries(name).then(verifyAndUnpackData).then(renderData).catch(showError);
+  fetchCountries(name).then(verifyAndUnpackData).then(renderData).catch(showError).finally(toogleLoader);
+};
+
+const onSearchBoxInput = ({ target }) => {
+  const countryName = target.value.trim();
+
+  clearCountryInfoContainers();
+
+  if (!countryName) return;
+
+  toogleLoader();
+  findCountries(countryName);
 };
 
 refs.searchBox.addEventListener('input', debounce(onSearchBoxInput, DEBOUNCE_DELAY));
