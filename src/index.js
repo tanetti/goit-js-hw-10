@@ -68,8 +68,14 @@ const renderData = data => {
 
 const showError = error => Notify.failure(error.message === '404' ? 'Oops, there is no country with that name' : 'Oops, something went wrong');
 
-const findCountries = name => {
-  fetchCountries(name).then(renderData).catch(showError).finally(toogleLoader);
+const findCountries = async name => {
+  try {
+    renderData(await fetchCountries(name));
+  } catch (error) {
+    showError(error);
+  }
+
+  toogleLoader();
 };
 
 const onSearchBoxInput = ({ target }) => {
